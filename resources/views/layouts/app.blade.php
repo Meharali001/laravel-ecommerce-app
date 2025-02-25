@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {{-- <meta nsame="viewport" content="width=device-width, initial-scale=1.0"> --}}
+    {{-- <meta nsssame="viewport" content="width=device-width, initial-scale=1.0"> --}}
     <title>My App</title>
         <!-- Required meta tags-->
         <meta charset="UTF-8">
