@@ -11,7 +11,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Add Product</h5>
+                            <h5 class="modal-title">Add Categories</h5>
                             <button type="button" class="close" wire:click="closeModal">&times;</button>
                         </div>
                         <div class="modal-body">
@@ -21,45 +21,14 @@
                                     <input type="text" wire:model="name" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label>price</label>
-                                    <input type="text" wire:model="price" class="form-control">
-                                    
-                                </div>
-                                {{-- <div class="form-group">
-                                    <label>Color</label>
-                                    <input type="text" wire:model="color" class="form-control">
-                                </div> --}}
-                                <div class="form-group">
-                                    <label>type</label>
-                                    <input type="text" wire:model="type" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Qty</label>
-                                    <input type="text" wire:model="qty" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Brand</label>
-                                    <input type="text" wire:model="brand" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Category</label>
-                                    <select wire:model="category_id" class="form-control">
-                                        <option value="" >Select Category</option>
-                                        @foreach ($categories as $caty)
-                                            <option value="{{ $caty->id }}">{{ $caty->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            
-                                <div class="form-group">
-                                    <label>Profile Image</label>
+                                    <label>Image</label>
                                     <input type="file" wire:model="image" class="form-control">
                                 
                                     <!-- Show Preview -->
                                     @if ($image)
                                         <img src="{{ $image->temporaryUrl() }}" class="mt-2" width="100">
                                     @elseif ($existingImage)
-                                        <img src="{{ asset('storage/products/' . $existingImage) }}" class="mt-2" width="100">
+                                        <img src="{{ asset('storage/category/' . $existingImage) }}" class="mt-2" width="100">
                                     @endif
                                 
                                     @error('image') <span class="text-danger">{{ $message }}</span> @enderror
@@ -84,38 +53,32 @@
                             <tr>
                                 <th>date</th>
                                 <th>name</th>
-                                <th>price</th>
-                                <th>type</th>
-                                <th>Brand</th>
-                                <th>Material</th>
-                                {{-- <th>Description</th> --}}
-                                <th>color</th>
+                                {{-- <th>comment</th> --}}
                                 <th>Image</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @dd($products) --}}
-                            @foreach ($products as $pro )
+                            
+
+                            @foreach ($categories as $pro )
                             <tr>
                                 <td>{{  $pro->created_at ?? '_' }}</td>
                                 <td>{{ $pro->name ?? '_' }}</td>
-                                <td>{{ $pro->price ?? '_' }}</td>
-                                <td>{{ $pro->type ?? '_' }}</td>
-                                <td>{{ $pro->brand ?? '_' }}</td>
-                                {{-- <td>{{ $pro->description ?? '_' }}</td> --}}
-                                <td>{{ $pro->material ?? '_' }}</td>
-                                <td class="process">{{ $pro->color ?? '_'  }}</td>
-                                <td><img src="{{ asset('storage/products/'. $pro->image ?? '' ) }} " width="100" height="100" alt="{{ $pro->name }}"></td>
+                                {{-- <td>{{ $pro->comment ?? '_' }}</td> --}}
+                                <td>
+                                    <img src="{{ asset('storage/category/' . optional($pro)->image) }}" width="100" height="100" alt="{{ optional($pro)->name }}">
+                                </td>
+                                
                                 <td>
                                     <div class="table-data-feature">
                                         <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
                                             <i class="zmdi zmdi-mail-send"></i>
                                         </button>
-                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Edit" wire:click="editProduct({{ $pro->id }})">
+                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Edit" wire:click="editProduct({{ $pro->id ?? '' }})">
                                             <i class="zmdi zmdi-edit"></i>
                                         </button>
-                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete" wire:click="deleteProduct({{ $pro->id }})">
+                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete" wire:click="deleteProduct({{ $pro->id ?? '' }})">
                                             <i class="zmdi zmdi-delete"></i>
                                         </button>
                                         <button class="item" data-toggle="tooltip" data-placement="top" title="More">
@@ -145,7 +108,7 @@
                         <button type="button" class="close" wire:click="closeDeleteModal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete this Product?</p>
+                        <p>Are you sure you want to delete this Category?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="closeDeleteModal">Cancel</button>
@@ -158,5 +121,3 @@
         </div>
     
 </div>
-
-

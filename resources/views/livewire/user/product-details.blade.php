@@ -6,7 +6,7 @@
             <aside class="col-lg-6">
               <div class="maindiv border rounded-4 mb-3 d-flex justify-content-center align-items-center">
                 <a data-fslightbox="mygalley"   class="rounded-4 innnerdiv " target="_blank" data-type="image" href="{{ asset('storage/products/'. $product->image) }}">
-                    <img style="width: 700px; height: 600px;  object-fit: cover; margin: auto; padding: 2%;" 
+                    <img style="width: 520px; height: 600px;  object-fit: cover; margin: auto; padding: 2%;" 
                     class="rounded-4 innnerimg" 
                     src="{{ asset('storage/products/'. $product->image) }}" />
                 </a>

@@ -23,7 +23,7 @@
     <style>
         /* ---my css */
         img.pro-img {
-        width: 400px !important;
+        width: 350px !important;
         height: 300px !important;
         padding: 25px;
     }
@@ -72,15 +72,15 @@
                     <ul class="list-unstyled text-light footer-link-list">
                         <li>
                             <i class="fas fa-map-marker-alt fa-fw"></i>
-                            123 Consectetur at ligula 10660
+                            karachi-pakistan
                         </li>
                         <li>
                             <i class="fa fa-phone fa-fw"></i>
-                            <a class="text-decoration-none" href="tel:010-020-0340">010-020-0340</a>
+                            <a class="text-decoration-none" href="tel:010-020-0340">03112281568</a>
                         </li>
                         <li>
                             <i class="fa fa-envelope fa-fw"></i>
-                            <a class="text-decoration-none" href="mailto:info@company.com">info@company.com</a>
+                            <a class="text-decoration-none" href="mailto:info@company.com">meharali031122@gmail.com</a>
                         </li>
                     </ul>
                 </div>
@@ -125,13 +125,6 @@
                         </li>
                     </ul>
                 </div>
-                {{-- <div class="col-auto">
-                    <label class="sr-only" for="subscribeEmail">Email address</label>
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control bg-dark border-light" id="subscribeEmail" placeholder="Email address">
-                        <div class="input-group-text btn-success text-light">Subscribe</div>
-                    </div>
-                </div> --}}
             </div>
         </div>
 

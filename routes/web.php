@@ -4,6 +4,7 @@
 
 use App\Http\Livewire\Admin\Banner;
 use App\Http\Livewire\Admin\Calendar;
+use App\Http\Livewire\Admin\Category as AdminCategory;
 use App\Http\Livewire\Admin\Charts;
 use App\Http\Livewire\Auth\AdminLogin;
 use App\Http\Livewire\Admin\Dashboard;
@@ -42,6 +43,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::get('/charts', Charts::class)->name('admin.charts');
     Route::get('/products', Product::class)->name('admin.products');
     Route::get('/site-banner', Banner::class)->name('admin.site.banner');
+    Route::get('/site-category', AdminCategory::class)->name('admin.site.category');
     Route::get('/site-testimonials', Testi::class)->name('admin.site.testimonials');
     Route::get('/forms', Forms::class)->name('admin.forms');
     Route::get('/tables', Tables::class)->name('admin.tables');    

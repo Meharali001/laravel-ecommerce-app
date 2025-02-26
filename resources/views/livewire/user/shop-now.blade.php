@@ -12,7 +12,7 @@
                             <p class="text-white mb-0 small">x4</p>
                         </div>
                     </div>
-                    <img class="pro-img" src="{{ asset('storage/products/'. $pro->image) }}" wire:click="productdetails({{ $pro->id }})" class="card-img-top" alt="Product Image" />
+                    <img class="pro-img card-img-top" src="{{ asset('storage/products/'. $pro->image) }}" wire:click="productdetails({{ $pro->id }})"  alt="Product Image" />
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <p class="small"><a href="#!" class="text-muted">{{ $pro->type }}</a></p>

@@ -73,7 +73,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @dd($products) --}}
+                            {{-- @dd($banners) --}}
                             @foreach ($banners as $pro )
                             <tr>
                                 <td>{{  $pro->created_at ?? '_' }}</td>
@@ -81,6 +81,7 @@
                                 <td>{{ $pro->slogan ?? '_' }}</td>
                                 <td>{{ $pro->type ?? '_' }}</td>
                                 <td>{{ $pro->description ?? '_' }}</td>
+                                {{-- {{ dd(asset('storage/banner/'.$pro->image)) }} --}}
                                 <td><img src="{{ asset('storage/banner/'. $pro->image ?? '' ) }} " width="100" height="100" alt="{{ $pro->name }}"></td>
                                 <td>
                                     <div class="table-data-feature">

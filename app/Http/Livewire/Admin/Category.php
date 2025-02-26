@@ -2,38 +2,28 @@
 
 namespace App\Http\Livewire\Admin;
 
-use App\Models\category;
-use App\Models\Product as ProductModel;
+use App\Models\category as ModelsCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 
-class Product extends Component
+class Category extends Component
 {
     use WithFileUploads;
 
-    public $proid,$category_id = null , $name, $color, $price, $qty,  $type, $image , $brand, $description , $material ;
+    public $proid, $name,  $image ;
     public $showModal = false;
     public $isEditMode = false;
     public $showDeleteModal = false;
     public $deleteUserId;
     public $existingImage;
-    // public $category_id = null; // Default null
-
-public function mount()
-{
-    $this->category_id = null; // Ensure default is null
-}
-
 
     protected function rules()
     {
         return [
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
             'image' => $this->isEditMode ? 'nullable|image' : 'required|image',
-            'category_id' => 'required|string|max:255',
         ];
     }
 
@@ -51,18 +41,11 @@ public function mount()
 
     public function editProduct($id)
     {
-        $pro = ProductModel::findOrFail($id);
+        $pro = ModelsCategory::findOrFail($id);
 
         $this->proid = $pro->id;
         $this->name = $pro->name;
-        $this->color = $pro->color;
-        $this->price = $pro->price;
-        $this->qty = $pro->qty;
-        $this->brand = $pro->brand;
-        $this->category_id = $pro->category_id;
-        $this->description = $pro->description;
-        $this->material = $pro->material;
-        $this->type = $pro->type;
+        // $this->comment = $pro->comment;
         $this->existingImage = $pro->image; // Save existing image for delete later
 
         $this->isEditMode = true;
@@ -83,16 +66,16 @@ public function mount()
     public function confirmDelete()
     {
         if ($this->deleteUserId) {
-            $product = ProductModel::find($this->deleteUserId);
+            $product = ModelsCategory::find($this->deleteUserId);
 
             if ($product) {
                 // Delete Image from Storage
                 if ($product->image) {
-                    Storage::delete('public/products/' . $product->image);
+                    Storage::delete('public/Category/' . $product->image);
                 }
 
                 $product->delete();
-                $this->emit('showToastr', 'success', 'Product Deleted');
+                $this->emit('showToastr', 'success', 'Category Deleted');
             }
 
             $this->closeDeleteModal();
@@ -101,7 +84,7 @@ public function mount()
 
     private function resetFields()
     {
-        $this->reset(['proid', 'name','category_id', 'color', 'price', 'type', 'image', 'existingImage']);
+        $this->reset(['proid', 'name', 'image', 'existingImage']);
         $this->resetValidation();
     }
 
@@ -115,50 +98,35 @@ public function mount()
             if ($this->image) {
                 // Generate new filename
                 $imageName = time() . '.' . $this->image->getClientOriginalExtension();
-                $this->image->storeAs('public/products', $imageName);
+                $this->image->storeAs('public/category', $imageName);
 
                 // Delete old image if updating
                 if ($this->isEditMode && $this->existingImage) {
-                    Storage::delete('public/products/' . $this->existingImage);
+                    Storage::delete('public/category/' . $this->existingImage);
                 }
             }
 
             if ($this->isEditMode) {
                 // Update Product
-                $products = ProductModel::findOrFail($this->proid);
+                $products = ModelsCategory::findOrFail($this->proid);
                 $products->update([
                     'admin_id' => Auth::guard('admin')->user()->id,
                     'name' => $this->name,
-                    'color' => $this->color,
-                    'type' => $this->type,
-                    'price' => $this->price,
-                    'qty' => $this->qty,
-                    'category_id' => $this->category_id,
-                    'material' => 'stainless steel',
-                    'description' => 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magnam, autem earum. Perspiciatis deleniti aliquam odio, quaerat ut eveniet pariatur laboriosam qui tempora animi illo nisi voluptates ullam? Quidem, accusamus reprehenderit!',
-                    'brand' => $this->brand,
-                    
+                    // 'comment' => $this->comment,                  
                     'image' => $imageName,
                 ]);
 
-                $message = 'Product updated successfully!';
+                $message = 'Category updated successfully!';
             } else {
                 // Create New Product
-                ProductModel::create([
+                ModelsCategory::create([
                     'admin_id' => Auth::guard('admin')->user()->id,
                     'name' => $this->name,
-                    'color' => $this->color,
-                    'type' => $this->type,
-                    'price' => $this->price,
-                    'qty' => $this->qty,
-                    'category_id' => $this->category_id,
-                    'material' => 'stainless steel',
-                    'description' => 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magnam, autem earum. Perspiciatis deleniti aliquam odio, quaerat ut eveniet pariatur laboriosam qui tempora animi illo nisi voluptates ullam? Quidem, accusamus reprehenderit!',
-                    'brand' => $this->brand,
+                    // 'comment' => $this->comment,                  
                     'image' => $imageName,
                 ]);
 
-                $message = 'Product added successfully!';
+                $message = 'Category added successfully!';
             }
 
             $this->closeModal();
@@ -169,14 +137,9 @@ public function mount()
             $this->emit('showToastr', 'error', 'Something went wrong! Please try again.');
         }
     }
-
     public function render()
     {
-        // dd($this->category_id);
-        $products = ProductModel::all();
-        $categories = category::all();
-        
-        return view('livewire.admin.product', compact('products','categories'));
+        $categories = ModelsCategory::all();
+        return view('livewire.admin.category',compact('categories'));
     }
 }
-

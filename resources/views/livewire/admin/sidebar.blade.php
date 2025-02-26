@@ -18,6 +18,10 @@
                                     <i class="fas fa-chart-bar"></i>Charts</a>
                             </li>
                             <li>
+                                <a  href="{{ route('admin.site.category') }}">
+                                    <i class="fas fa-chart-bar"></i>Categories</a>
+                            </li>
+                            <li>
                                 <a  href="{{ route('admin.products') }}">
                                     <i class="fas fa-chart-bar"></i>Products</a>
                             </li>

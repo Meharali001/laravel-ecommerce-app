@@ -126,7 +126,7 @@
 
 
     <!-- Start Categories of The Month -->
-    <section class="container py-5">
+    {{-- <section class="container py-5">
         <div class="row text-center pt-3">
             <div class="col-lg-6 m-auto">
                 <h1 class="h1">Categories of The Month</h1>
@@ -153,7 +153,9 @@
                 <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
             </div>
         </div>
-    </section>
+    </section> --}}
+
+    <livewire:user.contect-us />
 
     <div class="bg-light">
         <section class="bg-light container py-5">
@@ -190,45 +192,6 @@
                         </div>
                     </div>
                     @endforeach
-
-                    {{-- <div class="carousel-item">
-                        <div class="row text-center d-flex justify-content-center">
-                            <div class="col-md-6">
-                                <div class="card testimonial-card">
-                                    <div class="card-up" style="background-color: #7a81a8;"></div>
-                                    <div class="avatar mx-auto bg-white">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(2).webp" class="rounded-circle img-fluid" />
-                                    </div>
-                                    <div class="card-body">
-                                        <h4 class="mb-4">Lisa Cudrow</h4>
-                                        <hr />
-                                        <p class="dark-grey-text mt-4">
-                                            <i class="fas fa-quote-left pe-2"></i>Neque cupiditate assumenda in maiores repudi mollitia architecto.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
-                    {{-- <div class="carousel-item">
-                        <div class="row text-center d-flex justify-content-center">
-                            <div class="col-md-6">
-                                <div class="card testimonial-card">
-                                    <div class="card-up" style="background-color: #6d5b98;"></div>
-                                    <div class="avatar mx-auto bg-white">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(9).webp" class="rounded-circle img-fluid" />
-                                    </div>
-                                    <div class="card-body">
-                                        <h4 class="mb-4">John Smith</h4>
-                                        <hr />
-                                        <p class="dark-grey-text mt-4">
-                                            <i class="fas fa-quote-left pe-2"></i>Delectus impedit saepe officiis ab aliquam repellat rem unde ducimus.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                 </div>
                 <button class="carousel-control-prev rounded-circle position-absolute top-50 start-0 translate-middle-y" style="width: 80px; height: 80px;" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>

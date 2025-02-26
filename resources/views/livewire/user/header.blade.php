@@ -48,7 +48,7 @@
                             <a class="nav-link" href="{{ route('user.ShopNow') }}">Shop Now</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.cont') }}">Contact</a>
+                            <a class="nav-link" href="{{ route('user.cont') }}">Categories</a>
                         </li>
                     </ul>
                 </div>
