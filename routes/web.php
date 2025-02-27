@@ -20,6 +20,7 @@ use App\Http\Livewire\Checkout;
 use App\Http\Livewire\User\About;
 use App\Http\Livewire\User\ContectUs;
 use App\Http\Livewire\User\Dashboard as UserDashboard;
+use App\Http\Livewire\User\ProductCategory;
 use App\Http\Livewire\User\ProductDetails;
 use App\Http\Livewire\User\Services;
 use App\Http\Livewire\User\ShopNow;
@@ -63,6 +64,7 @@ Route::middleware('auth:user')->prefix('user')->group(function () {
     Route::get('/services', Services::class)->name('user.services');
     Route::get('/shop', ShopNow::class)->name('user.ShopNow');
     Route::get('/product-details/{id}', ProductDetails::class)->name('user.productdetails');
+    Route::get('/product-category/{id}', ProductCategory::class)->name('user.productcategory');
     Route::get('/checkout', Checkout::class)->name('user.checkout');
     Route::get('/payment', Checkout::class)->name('create.payment.intent');
     Route::post('/create-charge', [Checkout::class, 'createCharge'])->name('create.charge');

@@ -2,18 +2,22 @@
 
 namespace App\Http\Livewire\User;
 
+use Livewire\Component;
 use App\Http\Livewire\Admin\Category;
 use App\Models\Cart;
-use App\Models\Category as ProductCategory;
+use App\Models\Category as ProductCate;
 use App\Models\Product as ProductModel;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
-
-class ShopNow extends Component
+class ProductCategory extends Component
 {
     public $openmodal = false;
 
-    public $productId, $qty ;
+    public $productId, $qty, $cat_id ;
+
+    public function mount($id)
+    {
+        $this->cat_id = $id; // Set route ID to `cat_id`
+    }
 
 
     public function buyNow($id){
@@ -132,17 +136,14 @@ class ShopNow extends Component
     public function render()
     {
         $products = ProductModel::all();
-        $categories = ProductCategory::with('getproduct')->get();
+        $categories = ProductCate::where('id', $this->cat_id)->with('getproduct')->get();
         // dd($categories);
         $carts = Cart::where('user_id',Auth::guard('user')->user()->id)->with('getproduct')->get();
-        // dd($carts);
         $totalPrice = $carts->sum(function ($cart) {
             return $cart->getproduct ? $cart->getproduct->price * $cart->qty : 0;
         });
-
-        // dd($totalPrice);
-        
-
-        return view('livewire.user.shop-now', compact('products','carts','totalPrice','categories'))->layout('layouts.master');
+    
+        return view('livewire.user.product-category', compact('products','carts','totalPrice','categories'))->layout('layouts.master');
     }
+
 }

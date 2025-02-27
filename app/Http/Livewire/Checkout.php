@@ -51,6 +51,13 @@ class Checkout extends Component
                 'capture' => true,
             ]);
 
+            if($charge){
+                Cart::where('user_id', $userId)->delete();
+                $this->emit('toastr', ['type' => 'success', 'message' => 'thanks for shoping Successful!']);
+
+
+            }
+
             $this->emit('toastr', ['type' => 'success', 'message' => 'Payment Successful!']);
 
         } catch (\Exception $e) {
