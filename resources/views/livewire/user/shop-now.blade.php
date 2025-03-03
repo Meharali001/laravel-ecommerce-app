@@ -68,36 +68,32 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" wire:click="closemodal"></button>
           </div>
           <div class="modal-body">
-            @foreach ($carts as $item)
+            @php
+                $cart = session()->get('cart', []);
+            @endphp
+
+            @foreach ($cart as $key => $item)
               <div class="cart-items">
-                  <!-- Loop through cart items -->
-                  
-                  {{-- @dd($item->getproduct->image); --}}
-                  <div class="d-flex align-items-center mb-3 border-bottom pb-3 justify-content-between ">
-                    
-                      <img src="{{ asset('storage/products/'. $item->getproduct->image)  }}"  class="img-fluid rounded" alt="Product Image" style="width: 80px; height: 80px; object-fit: cover;">
-                      <div class="ms-1  d-flex carditem justify-content-between w-100" >
-                          <h6 class="mb-0">{{ $item->getproduct->name}}</h6>
-                          <p class="mb-1 text-muted">₨{{ number_format($item->getproduct->price, 2) }}</p>
+                  <div class="d-flex align-items-center mb-3 border-bottom pb-3 justify-content-between">
+                      <img src="{{ asset('storage/products/'. $item['image']) }}" class="img-fluid rounded" alt="Product Image" style="width: 80px; height: 80px; object-fit: cover;">
+                      <div class="ms-1 d-flex carditem justify-content-between w-100">
+                          <h6 class="mb-0">{{ $item['name'] }}</h6>
+                          <p class="mb-1 text-muted">₨{{ number_format($item['price'], 2) }}</p>
 
                           <div class="d-flex align-items-center justify-content-between innercard w-30" style="width: 30%">
-                              <button class="btn btn-sm btn-outline-secondary me-2" wire:click="decreaseQuantity({{ $item->id }})">-</button>
-                              {{-- @dd($item->name); --}}
-                              <input type="text" class="form-control  text-center" 
-       value="{{ $item->qty ?? 1 }}" min="1" 
-       style="width: 60px;">
-                              <button class="btn btn-sm btn-outline-secondary ms-2" wire:click="increaseQuantity({{ $item->id }})">+</button>
-                              <button class="btn btn-danger btn-sm ms-3" wire:click="removeItem({{ $item->id }})">Remove</button>
+                              <button class="btn btn-sm btn-outline-secondary me-2" wire:click="decreaseQuantity({{ $key }})">-</button>
+                              <input type="text" class="form-control text-center" value="{{ $item['qty'] }}" min="1" style="width: 60px;">
+                              <button class="btn btn-sm btn-outline-secondary ms-2" wire:click="increaseQuantity({{ $key }})">+</button>
+                              <button class="btn btn-danger btn-sm ms-3" wire:click="removeItem({{ $key }})">Remove</button>
                           </div>
                       </div>
                   </div>
-
               </div>
               @endforeach
-              <!-- End Loop -->
+
               <div class="d-flex justify-content-between mt-3">
                   <h5>Subtotal:</h5>
-                  <h5>₨{{ number_format($totalPrice, 2) }}</h5>
+                  <h5>₨{{ number_format(collect($cart)->sum(fn($item) => $item['price'] * $item['qty']), 2) }}</h5>
               </div>
           </div>
           <div class="modal-footer">
@@ -109,5 +105,6 @@
   </div>
 </div>
 @endif
+
 </div>
 {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}

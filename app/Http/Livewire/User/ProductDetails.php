@@ -1,88 +1,141 @@
 <?php
-
 namespace App\Http\Livewire\User;
 
-use App\Models\Cart;
-use App\Models\product;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
 use Livewire\Component;
 
 class ProductDetails extends Component
 {
-    public $cart, $product, $openmodal = false, $productqty;
+    public $product, $openmodal = false;
     public $productId, $qty;
 
-    protected $listeners = ['addToCart'];
+    protected $listeners = ['addToCart', 'cartUpdated' => '$refresh'];
 
     public function mount($id)
     {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-            $this->cart = Cart::with('getproduct')
-                ->where('user_id', $userId)
-                ->where('product_id', $id)
-                ->first();
-            $this->product = Product::find($id);
+        $this->product = Product::find($id);
+    }
+
+    // public function addToCart($id, $quantity)
+    // {
+    //     $this->openmodal = true;
+    //     $this->productId = $id;
+    //     $this->qty = (int) $quantity;
+    //     $this->savecart();
+    // }
+
+    // public function savecart()
+    // {
+    //     $cart = session()->get('cart', []);
+
+    //     if (isset($cart[$this->productId])) {
+    //         $cart[$this->productId]['qty'] += $this->qty;
+    //     } else {
+    //         $product = Product::find($this->productId);
+    //         if ($product) {
+    //             $cart[$this->productId] = [
+    //                 'id' => $product->id,
+    //                 'name' => $product->name,
+    //                 'price' => $product->price,
+    //                 'image' => $product->image,
+    //                 'qty' => $this->qty,
+    //             ];
+    //         }
+    //     }
+
+    //     session()->put('cart', $cart);
+    //     $this->emit('cartUpdated');
+    // }
+    public function addToCart($id)
+    {
+        $product = Product::find($id);
+        // dd($product);
+
+        if (!$product) {
+            return;
+        }
+
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            $cart[$id]['qty'] += 1;
+        } else {
+            $cart[$id] = [
+                "id" => $product->id,
+                "name" => $product->name,
+                "price" => $product->price,
+                "image" => $product->image,
+                "qty" => 1,
+            ];
+        }
+
+        session()->put('cart', $cart);
+        $this->openmodal = true;
+    }
+
+    public function increaseQuantity($id)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            $cart[$id]['qty'] += 1;
+            session()->put('cart', $cart);
         }
     }
 
-    public function addToCart($id, $quantity)
+    public function decreaseQuantity($id)
     {
-        
-        $this->openmodal = true; 
-        $this->productId = $id;
-        $this->qty = (int)$quantity; // ✅ Quantity set hogi
+        $cart = session()->get('cart', []);
 
-        // ✅ Debugging ke liye session message use karein (dd hata dein)
-        session()->flash('message', "Product ID: $id, Quantity: $quantity");
-
-        // ✅ Cart save logic
-        $this->savecart();
-    }
-
-    public function savecart()
-    {
-        if ($this->productId) {
-            $userId = Auth::guard('user')->user()->id;
-
-            $cart = Cart::where('user_id', $userId)
-                ->where('product_id', $this->productId)
-                ->first();
-
-            if ($cart) {
-                $cart->qty += $this->qty;
-                $cart->save();
-            } else {
-                Cart::create([
-                    'user_id' => $userId,
-                    'product_id' => $this->productId,
-                    'qty' => $this->qty, // ✅ User entered quantity
-                ]);
-            }
+        if (isset($cart[$id]) && $cart[$id]['qty'] > 1) {
+            $cart[$id]['qty'] -= 1;
+            session()->put('cart', $cart);
         }
     }
 
-        public function increaseQuantity($id){
-        
-                // dd($id);
-                if($id){
-                    $userId = Auth::guard('user')->user()->id;
-            
-                    // Check if product already exists in cart
-                    $cart = Cart::where('user_id', $userId)
-                    ->where('id', $id) // ✅ Correct: `id` se filter karein
-                    ->first();
-        
-                                if ($cart) {
-                                    // If product exists, increase quantity
-                                    $cart->qty += 1;
-                                    $cart->save();
-                }
-        
-                
-        
-        
-            }
+    public function removeItem($id)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+            session()->put('cart', $cart);
+        }
+    }    
+
+    // public function increaseQuantity($id)
+    // {
+    //     $cart = session()->get('cart', []);
+    //     if (isset($cart[$id])) {
+    //         $cart[$id]['qty'] += 1;
+    //         session()->put('cart', $cart);
+    //     }
+    //     $this->emit('cartUpdated');
+    // }
+
+    // public function decreaseQuantity($id)
+    // {
+    //     $cart = session()->get('cart', []);
+    //     if (isset($cart[$id]) && $cart[$id]['qty'] > 1) {
+    //         $cart[$id]['qty'] -= 1;
+    //         session()->put('cart', $cart);
+    //     }
+    //     $this->emit('cartUpdated');
+    // }
+
+    // public function removeItem($id)
+    // {
+    //     $cart = session()->get('cart', []);
+    //     if (isset($cart[$id])) {
+    //         unset($cart[$id]);
+    //         session()->put('cart', $cart);
+    //     }
+    //     $this->emit('cartUpdated');
+    // }
+
+    public function closemodal()
+    {
+        $this->openmodal = false;
     }
 
     public function checkout()
@@ -90,55 +143,16 @@ class ProductDetails extends Component
         return redirect()->route('user.checkout');
     }
 
-    public function decreaseQuantity($id)
-    {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            $cart = Cart::where('user_id', $userId)
-                        ->where('id', $id)
-                        ->first();
-    
-            if ($cart && $cart->qty > 1) {
-                $cart->qty -= 1;
-                $cart->save();
-            }
-        }
-    }
-
-    public function removeItem($id)
-    {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            $cart = Cart::where('user_id', $userId)
-                        ->where('id', $id)
-                        ->first();
-                        if($cart){
-                            $cart->delete();   
-                        }
-    
-
-        }
-        
-    }
-
-    public function closemodal(){
-        $this->openmodal = false;
-    }
-
     public function render()
     {
-        $cartitem = Cart::where('user_id', Auth::guard('user')->user()->id)
-            ->with('getproduct')->get();
-
-        $totalPrice = $cartitem->sum(fn($cart) => $cart->getproduct ? $cart->getproduct->price * $cart->qty : 0);
+        $cart = session()->get('cart', []);
+        $totalPrice = collect($cart)->sum(fn($item) => $item['price'] * $item['qty']);
 
         return view('livewire.user.product-details', [
-            'cart' => $this->cart,
             'product' => $this->product,
-            'cartitem' => $cartitem,
+            'cartitem' => $cart,
             'totalPrice' => $totalPrice,
         ])->layout('layouts.master');
     }
 }
+

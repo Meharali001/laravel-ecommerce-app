@@ -2,21 +2,18 @@
 
 namespace App\Http\Livewire\User;
 
-use App\Http\Livewire\Admin\Category;
-use App\Models\Cart;
-use App\Models\Category as ProductCategory;
 use App\Models\Product as ProductModel;
+use App\Models\Category as ProductCategory;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ShopNow extends Component
 {
     public $openmodal = false;
+    public $productId, $qty;
 
-    public $productId, $qty ;
-
-
-    public function buyNow($id){
+    public function buyNow($id)
+    {
         dd($id);
     }
 
@@ -30,102 +27,69 @@ class ShopNow extends Component
         return redirect()->route('user.checkout');
     }
 
+    public function addToCart($id)
+    {
+        $product = ProductModel::find($id);
 
+        if (!$product) {
+            return;
+        }
 
-    public function increaseQuantity($id){
-        
-                // dd($id);
-                if($id){
-                    $userId = Auth::guard('user')->user()->id;
-            
-                    // Check if product already exists in cart
-                    $cart = Cart::where('user_id', $userId)
-                    ->where('id', $id) // ✅ Correct: `id` se filter karein
-                    ->first();
-        
-                                if ($cart) {
-                                    // If product exists, increase quantity
-                                    $cart->qty += 1;
-                                    $cart->save();
-                }
-        
-                
-        
-        
-            }
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            $cart[$id]['qty'] += 1;
+        } else {
+            $cart[$id] = [
+                "id" => $product->id,
+                "name" => $product->name,
+                "price" => $product->price,
+                "image" => $product->image,
+                "qty" => 1,
+            ];
+        }
+
+        session()->put('cart', $cart);
+        $this->openmodal = true;
+    }
+
+    public function increaseQuantity($id)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            $cart[$id]['qty'] += 1;
+            session()->put('cart', $cart);
+        }
     }
 
     public function decreaseQuantity($id)
     {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            $cart = Cart::where('user_id', $userId)
-                        ->where('id', $id)
-                        ->first();
-    
-            if ($cart && $cart->qty > 1) {
-                $cart->qty -= 1;
-                $cart->save();
-            }
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id]) && $cart[$id]['qty'] > 1) {
+            $cart[$id]['qty'] -= 1;
+            session()->put('cart', $cart);
         }
     }
 
     public function removeItem($id)
     {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            $cart = Cart::where('user_id', $userId)
-                        ->where('id', $id)
-                        ->first();
-                        if($cart){
-                            $cart->delete();   
-                        }
-    
+        $cart = session()->get('cart', []);
 
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+            session()->put('cart', $cart);
         }
     }
 
-
-    public function addToCart($id){
-        $this->openmodal();
-        $this->productId = $id;
-        $this->savecart();
-    }
-
-    public function savecart()
+    public function openmodal()
     {
-        if ($this->productId) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            // Check if product already exists in cart
-            $cart = Cart::where('user_id', $userId)
-                        ->where('product_id', $this->productId)
-                        ->first();
-    
-            if ($cart) {
-                // If product exists, increase quantity
-                $cart->qty += 1;
-                $cart->save();
-            } else {
-                // dd($userId);
-                // If product does not exist, create a new cart entry
-                Cart::create([
-                    'user_id' => $userId,
-                    'product_id' => $this->productId,
-                    'qty' => 1, // Default quantity
-                ]);
-            }
-        }
-    }
-    
-
-    public function openmodal(){
         $this->openmodal = true;
     }
 
-    public function closemodal(){
+    public function closemodal()
+    {
         $this->openmodal = false;
     }
 
@@ -133,16 +97,13 @@ class ShopNow extends Component
     {
         $products = ProductModel::all();
         $categories = ProductCategory::with('getproduct')->get();
-        // dd($categories);
-        $carts = Cart::where('user_id',Auth::guard('user')->user()->id)->with('getproduct')->get();
-        // dd($carts);
-        $totalPrice = $carts->sum(function ($cart) {
-            return $cart->getproduct ? $cart->getproduct->price * $cart->qty : 0;
+        $cart = session()->get('cart', []);
+
+        $totalPrice = collect($cart)->sum(function ($item) {
+            return $item['price'] * $item['qty'];
         });
 
-        // dd($totalPrice);
-        
-
-        return view('livewire.user.shop-now', compact('products','carts','totalPrice','categories'))->layout('layouts.master');
+        return view('livewire.user.shop-now', compact('products', 'categories', 'cart', 'totalPrice'))
+            ->layout('layouts.master');
     }
 }

@@ -24,6 +24,7 @@ use App\Http\Livewire\User\ProductCategory;
 use App\Http\Livewire\User\ProductDetails;
 use App\Http\Livewire\User\Services;
 use App\Http\Livewire\User\ShopNow;
+use App\Http\Livewire\User\ThanksForshopping;
 // use App\Models\SiteBanner;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -65,8 +66,9 @@ Route::middleware('auth:user')->prefix('user')->group(function () {
     Route::get('/shop', ShopNow::class)->name('user.ShopNow');
     Route::get('/product-details/{id}', ProductDetails::class)->name('user.productdetails');
     Route::get('/product-category/{id}', ProductCategory::class)->name('user.productcategory');
+    Route::get('/thanks-page/{orderid}', ThanksForshopping::class)->name('user.Thanks-page');
     Route::get('/checkout', Checkout::class)->name('user.checkout');
-    Route::get('/payment', Checkout::class)->name('create.payment.intent');
+    // Route::get('/payment', Checkout::class)->name('create.payment.intent');
     Route::post('/create-charge', [Checkout::class, 'createCharge'])->name('create.charge');
 });
 

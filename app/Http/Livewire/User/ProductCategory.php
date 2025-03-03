@@ -3,25 +3,23 @@
 namespace App\Http\Livewire\User;
 
 use Livewire\Component;
-use App\Http\Livewire\Admin\Category;
-use App\Models\Cart;
-use App\Models\Category as ProductCate;
 use App\Models\Product as ProductModel;
+use App\Models\Category as ProductCate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
 class ProductCategory extends Component
 {
     public $openmodal = false;
-
-    public $productId, $qty, $cat_id ;
+    public $productId, $qty, $cat_id;
 
     public function mount($id)
     {
         $this->cat_id = $id; // Set route ID to `cat_id`
     }
 
-
-    public function buyNow($id){
-        dd($id);
+    public function closemodal(){
+        $this->openmodal = false;
     }
 
     public function productdetails($id)
@@ -29,121 +27,79 @@ class ProductCategory extends Component
         return redirect()->route('user.productdetails', ['id' => $id]);
     }
 
-    public function checkout()
+    public function addToCart($id)
     {
-        return redirect()->route('user.checkout');
+        $this->productId = $id;
+        $this->saveCart();
+        $this->openmodal = true;
     }
 
+    public function saveCart()
+    {
+        $cart = Session::get('cart', []);
 
-
-    public function increaseQuantity($id){
-        
-                // dd($id);
-                if($id){
-                    $userId = Auth::guard('user')->user()->id;
-            
-                    // Check if product already exists in cart
-                    $cart = Cart::where('user_id', $userId)
-                    ->where('id', $id) // ✅ Correct: `id` se filter karein
-                    ->first();
-        
-                                if ($cart) {
-                                    // If product exists, increase quantity
-                                    $cart->qty += 1;
-                                    $cart->save();
-                }
-        
-                
-        
-        
+        if (isset($cart[$this->productId])) {
+            // Agar product already cart mein hai to qty increase karein
+            $cart[$this->productId]['qty'] += 1;
+        } else {
+            // Naya product add karein
+            $product = ProductModel::find($this->productId);
+            if ($product) {
+                $cart[$this->productId] = [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'qty' => 1,
+                    'image' => $product->image
+                ];
             }
+        }
+
+        Session::put('cart', $cart);
+    }
+
+    public function increaseQuantity($id)
+    {
+        $cart = Session::get('cart', []);
+        if (isset($cart[$id])) {
+            $cart[$id]['qty'] += 1;
+            Session::put('cart', $cart);
+        }
     }
 
     public function decreaseQuantity($id)
     {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            $cart = Cart::where('user_id', $userId)
-                        ->where('id', $id)
-                        ->first();
-    
-            if ($cart && $cart->qty > 1) {
-                $cart->qty -= 1;
-                $cart->save();
-            }
+        $cart = Session::get('cart', []);
+        if (isset($cart[$id]) && $cart[$id]['qty'] > 1) {
+            $cart[$id]['qty'] -= 1;
+            Session::put('cart', $cart);
         }
     }
 
     public function removeItem($id)
     {
-        if ($id) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            $cart = Cart::where('user_id', $userId)
-                        ->where('id', $id)
-                        ->first();
-                        if($cart){
-                            $cart->delete();   
-                        }
-    
-
+        $cart = Session::get('cart', []);
+        if (isset($cart[$id])) {
+            unset($cart[$id]);
+            Session::put('cart', $cart);
         }
     }
 
-
-    public function addToCart($id){
-        $this->openmodal();
-        $this->productId = $id;
-        $this->savecart();
-    }
-
-    public function savecart()
+    public function checkout()
     {
-        if ($this->productId) {
-            $userId = Auth::guard('user')->user()->id;
-    
-            // Check if product already exists in cart
-            $cart = Cart::where('user_id', $userId)
-                        ->where('product_id', $this->productId)
-                        ->first();
-    
-            if ($cart) {
-                // If product exists, increase quantity
-                $cart->qty += 1;
-                $cart->save();
-            } else {
-                // dd($userId);
-                // If product does not exist, create a new cart entry
-                Cart::create([
-                    'user_id' => $userId,
-                    'product_id' => $this->productId,
-                    'qty' => 1, // Default quantity
-                ]);
-            }
-        }
-    }
-    
-
-    public function openmodal(){
-        $this->openmodal = true;
-    }
-
-    public function closemodal(){
-        $this->openmodal = false;
+        return redirect()->route('user.checkout');
     }
 
     public function render()
     {
         $products = ProductModel::all();
         $categories = ProductCate::where('id', $this->cat_id)->with('getproduct')->get();
-        // dd($categories);
-        $carts = Cart::where('user_id',Auth::guard('user')->user()->id)->with('getproduct')->get();
-        $totalPrice = $carts->sum(function ($cart) {
-            return $cart->getproduct ? $cart->getproduct->price * $cart->qty : 0;
-        });
-    
-        return view('livewire.user.product-category', compact('products','carts','totalPrice','categories'))->layout('layouts.master');
-    }
 
+        $cart = Session::get('cart', []);
+        $totalPrice = array_sum(array_map(function ($item) {
+            return $item['price'] * $item['qty'];
+        }, $cart));
+
+        return view('livewire.user.product-category', compact('products', 'cart', 'totalPrice', 'categories'))->layout('layouts.master');
+    }
 }
