@@ -34,7 +34,7 @@ class ThanksForshopping extends Component
 
                 $orders = Order::where('user_id', Auth::guard('user')->user()->id)
                      ->where('id', $this->orderid)
-                     ->with('getcart')
+                     ->with('orderDetails')
                      ->get();
                     //  dd($order);
 

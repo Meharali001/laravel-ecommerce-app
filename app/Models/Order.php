@@ -10,7 +10,10 @@ class Order extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function getcart(){
-        return $this->hasMany(OrderDetail::class, 'order_id');
+    public function orderDetails() {
+        return $this->hasMany(OrderDetail::class, 'order_id'); // Make sure 'order_id' exists in order_details table
     }
+    
 }
+
+// Fetch Orders with details

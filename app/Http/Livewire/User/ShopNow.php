@@ -14,7 +14,8 @@ class ShopNow extends Component
 
     public function buyNow($id)
     {
-        dd($id);
+        
+
     }
 
     public function productdetails($id)

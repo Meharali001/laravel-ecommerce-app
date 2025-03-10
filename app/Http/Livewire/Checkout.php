@@ -65,6 +65,7 @@ class Checkout extends Component
             $orderdetail = OrderDetail::where('user_id', $userId)
                 ->where('order_done', '0')
                 ->with('getproduct')
+                
                 ->get();
     
             $total = $orderdetail->sum(fn($cart) => $cart->getproduct ? $cart->getproduct->price * $cart->qty : 0);
